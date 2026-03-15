@@ -1,22 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
-
-type Preference = 'auto' | 'dark' | 'light';
-type SystemTheme = 'dark' | 'light';
-
-interface ThemeContextValue {
-  preference: Preference;
-  systemTheme: SystemTheme;
-  resolvedTheme: SystemTheme;
-  cycleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextValue | null>(null);
+import { useEffect, useState, type ReactNode } from 'react';
+import { ThemeContext, type Preference, type SystemTheme } from './context';
 
 const CYCLE: Preference[] = ['auto', 'dark', 'light'];
 
@@ -41,6 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreference] = useState<Preference>(() =>
     getCookiePreference(),
   );
+
   const [systemTheme, setSystemTheme] = useState<SystemTheme>(() =>
     getSystemTheme(),
   );
@@ -68,6 +52,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setPreference((prev) => {
       const next = CYCLE[(CYCLE.indexOf(prev) + 1) % CYCLE.length];
       setCookiePreference(next);
+
       return next;
     });
   };
@@ -79,11 +64,4 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
-}
-
-export function useTheme() {
-  const ctx = useContext(ThemeContext);
-
-  if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
-  return ctx;
 }
