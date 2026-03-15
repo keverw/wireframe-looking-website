@@ -32,12 +32,18 @@ function setCookiePreference(pref: Preference) {
 }
 
 function getSystemTheme(): SystemTheme {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreference] = useState<Preference>(() => getCookiePreference());
-  const [systemTheme, setSystemTheme] = useState<SystemTheme>(() => getSystemTheme());
+  const [preference, setPreference] = useState<Preference>(() =>
+    getCookiePreference(),
+  );
+  const [systemTheme, setSystemTheme] = useState<SystemTheme>(() =>
+    getSystemTheme(),
+  );
 
   // Always track system preference changes, even when explicit dark/light is set
   useEffect(() => {
@@ -51,7 +57,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const resolvedTheme: SystemTheme = preference === 'auto' ? systemTheme : preference;
+  const resolvedTheme: SystemTheme =
+    preference === 'auto' ? systemTheme : preference;
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', resolvedTheme === 'dark');
@@ -66,7 +73,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ preference, systemTheme, resolvedTheme, cycleTheme }}>
+    <ThemeContext.Provider
+      value={{ preference, systemTheme, resolvedTheme, cycleTheme }}
+    >
       {children}
     </ThemeContext.Provider>
   );
@@ -74,7 +83,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme() {
   const ctx = useContext(ThemeContext);
-  
+
   if (!ctx) throw new Error('useTheme must be used within ThemeProvider');
   return ctx;
 }
